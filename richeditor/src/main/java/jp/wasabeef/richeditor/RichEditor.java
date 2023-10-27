@@ -442,6 +442,11 @@ public class RichEditor extends WebView {
     exec("javascript:RE.insertLink('" + href + "', '" + title + "');");
   }
 
+  public void customInsertLink(String href, String title) {
+    exec("javascript:RE.prepareInsert();");
+    exec("javascript:RE.customInsertLink('" + href + "', '" + title + "');");
+  }
+
   public void insertTodo() {
     exec("javascript:RE.prepareInsert();");
     exec("javascript:RE.setTodo('" + Utils.getCurrentTime() + "');");

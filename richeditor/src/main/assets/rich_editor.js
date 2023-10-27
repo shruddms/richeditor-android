@@ -253,6 +253,27 @@ RE.insertLink = function(url, title) {
     RE.callback();
 }
 
+RE.customInsertLink = function(url, title) {
+    RE.restorerange();
+    var sel = document.getSelection();
+    if (sel.toString().length == 0) {
+        document.execCommand("insertHTML", false, "<a href='" + url + "' class='custom-link-style'>" + title + "</a>");
+
+    } else if (sel.rangeCount) {
+        var el = document.createElement("a");
+        el.setAttribute("href", url);
+        el.setAttribute("title", title);
+        el.setAttribute("class", "custom-link-style");
+
+        var range = sel.getRangeAt(0).cloneRange();
+        range.surroundContents(el);
+        sel.removeAllRanges();
+        sel.addRange(range);
+    }
+    RE.callback();
+};
+
+
 RE.setTodo = function(text) {
     var html = '<input type="checkbox" name="'+ text +'" value="'+ text +'"/> &nbsp;';
     document.execCommand('insertHTML', false, html);
@@ -359,3 +380,49 @@ RE.editor.addEventListener("keyup", function(e) {
     }
 });
 RE.editor.addEventListener("click", RE.enabledEditingItems);
+
+
+document.addEventListener('DOMContentLoaded', function() {
+
+    var editor = document.getElementById('editor');
+
+    editor.addEventListener('input', function() {
+        var text = editor.innerHTML;
+        applyCustomLinkStyle(text, editor);
+    });
+});
+
+function applyCustomLinkStyle(text, editorElement) {
+
+    var urlFormat = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+
+    var styledText = text.replace(urlFormat, function(url) {
+        return "<a href='" + url + "' class='custom-link-style'>" + "custom link" + "</a>";
+    });
+
+    if (styledText !== text) {
+        editorElement.innerHTML = styledText;
+
+        placeCaretAtEnd(editorElement);
+    }
+}
+
+function placeCaretAtEnd(el) {
+    el.focus();
+    if (typeof window.getSelection != "undefined" && typeof document.createRange != "undefined") {
+        var range = document.createRange();
+        range.selectNodeContents(el);
+        range.collapse(false);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+    } else if (typeof document.body.createTextRange != "undefined") {
+        var textRange = document.body.createTextRange();
+        textRange.moveToElementText(el);
+        textRange.collapse(false);
+        textRange.select();
+    }
+}
+
+
+

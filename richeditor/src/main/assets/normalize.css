@@ -347,3 +347,18 @@ template {
 [hidden] {
   display: none;
 }
+
+/**
+ * Custom style for links
+ */
+.custom-link-style {
+    color: #4a90e2;
+    text-decoration: none;
+    display: inline-block;
+    padding: 5px;
+    background-color: #eeeeee;
+    border: 1px solid #cccccc;
+    text-decoration: none;
+    color: #333333;
+}
+
